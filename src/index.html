@@ -14,7 +14,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             font-size: 1vw;
         }
 
@@ -67,6 +67,7 @@
         input[type="text"], input[type="number"] {
             flex: 1;
             height: 1.5vw;
+            font-size: 1.3vw;
             padding: 0.625vw;
             border: 0.0625vw solid #ccc;
             border-radius: 0.25vw;
@@ -119,6 +120,66 @@
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
             padding: 1.25vw;
+            height: 27.75vw;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                font-size: 4vw;
+            }
+
+            h1 {
+                font-size: 8vw;
+            }
+
+            h2 {
+                font-size: 6vw;
+            }
+
+            input[type="text"], input[type="number"] {
+                height: 4vw;
+                font-size: 4vw;
+                padding: 3vw;
+                width: calc(100% - 20vw);
+                border-radius: 2vw;
+                margin: 2vw 0;
+            }
+
+            .line {
+                flex-direction: column;
+            }
+
+            .input-full-width {
+                margin: 2vw 7vw!important;
+            }
+
+            .section {
+                padding: 4vw;
+                border-radius: 2.5vw;
+            }
+
+            button {
+                padding: 2vw 3vw;
+                font-size: 4vw;
+                width: calc(100% - 14vw);
+                margin: 1vw 7vw;
+                border-radius: 1vw;
+            }
+
+            .centered {
+                flex-direction: column;
+                width: 90vw;
+            }
+
+            body {
+                overflow-y: auto;
+            }
+
+            #response-part {
+                width: calc(100% - 2.5vw);
+                border-radius: 2.5vw;
+                height: 100vw;
+            }
         }
     </style>
 </head>
@@ -205,9 +266,12 @@
 
             if (!webhookResponse.ok) {
                 console.log('Failed to call webhook');
+                document.getElementById('response').innerText = 'Error ' + webhookResponse.statusText + ': ' + await webhookResponse.text();
+            } else {
+                console.log('Webhook called successfully');
+                document.getElementById('response').innerText = await webhookResponse.text();
             }
 
-            document.getElementById('response').innerText = await webhookResponse.text();
             document.getElementById('response-part').style.display = "block";
         } catch (error) {
             document.getElementById('response').innerText = `Error: ${error.message}`;
