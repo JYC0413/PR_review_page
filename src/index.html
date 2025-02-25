@@ -236,10 +236,14 @@
         const githubRepo = match[2];
         const githubPrNumber = match[3];
 
-        const fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/README.md`;
+        let fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/llm.txt`;
 
         try {
-            const response = await fetch(fileUrl);
+            let response = await fetch(fileUrl);
+            if (!response.ok) {
+                fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/README.md`;
+                response = await fetch(fileUrl);
+            }
             if (!response.ok) {
                 console.log('Failed to fetch file from GitHub');
             }
@@ -250,7 +254,7 @@
                 github_repo: githubRepo,
                 github_pr_number: githubPrNumber,
                 llm_api_endpoint: llmEndpoint,
-                llm_ctx_size: llmCtxSize,
+                llm_ctx_size: parseInt(llmCtxSize, 0),
                 llm_api_key: llmApiKey,
                 system_prompt: systemPrompt
             };
