@@ -236,7 +236,7 @@
         const githubRepo = match[2];
         const githubPrNumber = match[3];
 
-        let fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/llm.txt`;
+        let fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/llms.txt`;
 
         try {
             let response = await fetch(fileUrl);
