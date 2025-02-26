@@ -33,7 +33,7 @@
 
         form {
             flex: 1;
-            padding: 1.25vw;
+            margin: 1.25vw;
             width: 100%;
         }
 
@@ -94,7 +94,8 @@
             padding: 0.625vw;
             background: #e9ecef;
             border-radius: 0.25vw;
-            height: calc(100% - 4.75vw);
+            max-height: calc(100% - 4.75vw);
+            min-height: calc(100% - 4.75vw);
             overflow-y: auto;
         }
 
@@ -116,12 +117,10 @@
 
         #response-part {
             flex: 1;
-            display: none;
             border-radius: 0.5vw;
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
             padding: 1.25vw;
-            height: 35.75vw;
         }
 
         @media (max-width: 760px) {
@@ -179,7 +178,6 @@
             #response-part {
                 width: calc(100% - 2.5vw);
                 border-radius: 2.5vw;
-                height: 100vw;
             }
         }
     </style>
@@ -222,6 +220,12 @@
 </div>
 
 <script>
+    window.onload = function() {
+        const left = document.getElementById('prForm');
+        const right = document.getElementById('response-part');
+        console.log(left.offsetHeight);
+        // right.style.height = left.offsetHeight + 'px';
+    };
     document.getElementById('prForm').addEventListener('submit', async function (event) {
         event.preventDefault();
 
@@ -284,7 +288,7 @@
                 document.getElementById('response').innerText = 'Error ' + webhookResponse.statusText + ': ' + await webhookResponse.text();
             } else {
                 console.log('Webhook called successfully');
-                document.getElementById('response').innerText = marked.parse(await webhookResponse.text());
+                document.getElementById('response').innerHTML = marked.parse(await webhookResponse.text());
             }
 
         } catch (error) {
