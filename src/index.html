@@ -55,19 +55,15 @@
             margin-bottom: 1.25vw;
         }
 
-        .line:last-child {
-            margin-bottom: 0;
-        }
-
         label {
             display: block;
             font-weight: bold;
             padding-right: 0.3125vw;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             flex: 1;
-            height: 1.5vw;
+            line-height: 1.5vw;
             font-size: 1.3vw;
             padding: 0.625vw;
             border: 0.0625vw solid #ccc;
@@ -117,7 +113,7 @@
 
         #response-part {
             flex: 1;
-            display: none;
+            /*display: none;*/
             border-radius: 0.5vw;
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
@@ -151,7 +147,7 @@
             }
 
             .input-full-width {
-                margin: 2vw 7vw!important;
+                margin: 2vw 7vw !important;
             }
 
             .section {
@@ -190,22 +186,33 @@
         <div class="section">
             <h2 class="section-title">Gaia Config</h2>
             <div class="line">
-                <label for="llmEndpoint">LLM API Endpoint:</label>
-                <input value="https://coder.gaia.domains/v1" type="text" id="llmEndpoint" name="llmEndpoint" required>
+                <label for="llmConfig">LLM Configuration:</label>
+                <select id="llmConfig" name="llmConfig" required>
+                </select>
             </div>
-            <div class="line">
-                <label for="llmModelName">LLM Model Name:</label>
-                <input value="Qwen2.5-Coder-32B-Instruct-Q5_K_M" type="text" id="llmModelName" name="llmModelName" required>
-            </div>
-            <div class="line">
-                <label for="llmCtxSize">LLM Context Size:</label>
-                <input value="16384" type="number" id="llmCtxSize" name="llmCtxSize" required>
+            <div id="customConfig" style="display: none;">
+                <div class="line">
+                    <label for="llmEndpoint">LLM API Endpoint:</label>
+                    <input value="https://coder.gaia.domains/v1" type="text" id="llmEndpoint" name="llmEndpoint"
+                           required>
+                </div>
+                <div class="line">
+                    <label for="llmModelName">LLM Model Name:</label>
+                    <input value="Qwen2.5-Coder-32B-Instruct-Q5_K_M" type="text" id="llmModelName" name="llmModelName"
+                           required>
+                </div>
+                <div class="line">
+                    <label for="llmCtxSize">LLM Context Size:</label>
+                    <input value="16384" type="number" id="llmCtxSize" name="llmCtxSize" required>
+                </div>
             </div>
             <div class="line">
                 <label for="llmApiKey">LLM API Key:</label>
                 <input type="text" id="llmApiKey" name="llmApiKey" required>
             </div>
-            <span style="color: #b2b2b2;">* You can get our API key through <a href="https://docs.gaianet.ai/getting-started/authentication" style="color: #626262;" target="_blank">this documentation</a>.</span>
+            <span style="color: #b2b2b2;">* You can get our API key through <a
+                    href="https://docs.gaianet.ai/getting-started/authentication" style="color: #626262;"
+                    target="_blank">this documentation</a>.</span>
         </div>
 
         <div class="section">
@@ -214,13 +221,151 @@
             <button class="button-large" type="submit">Submit</button>
         </div>
     </form>
-    <div id="response-part">
+    <div style="position: relative;" id="response-part">
         <h2>Response</h2>
+        <div id="copyCode" style="position: absolute; margin-top:0.5vw;right: 2vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">Copy</div>
         <div id="response"></div>
     </div>
 </div>
 
 <script>
+    const modelData = [
+        {
+            name: "Gaia — Qwen Coder 32b",
+            url: "https://coder.gaia.domains/v1",
+            model: "Qwen2.5-Coder-32B-Instruct-Q5_K_M",
+            memory: 32768
+        },
+        {
+            name: "Gaia — Qwen Coder with Rust knowledge",
+            url: "https://rustcoder.gaia.domains/v1",
+            model: "Qwen2.5-Coder-7B-Instruct-Q5_K_M",
+            memory: 32768
+        },
+        {
+            name: "Gaia — Llama 3.3 70b",
+            url: "https://llama70b.gaia.domains/v1",
+            model: "Llama-3.3-70B-Instruct-Q5_K_M",
+            memory: 32768
+        },
+        {
+            name: "Gaia — DeepSeek R1 distilled Qwen 32b",
+            url: "https://deepseek.gaia.domains/v1",
+            model: "DeepSeek-R1-Distill-Qwen-32B-Q5_K_M",
+            memory: 32768
+        },
+        {
+            name: "OpenAI — gpt-4o",
+            url: "https://api.openai.com/v1",
+            model: "gpt-4o",
+            memory: 128000
+        },
+        {
+            name: "OpenAI — o1",
+            url: "https://api.openai.com/v1",
+            model: "o1",
+            memory: 200000
+        },
+        {
+            name: "OpenAI — o3-mini",
+            url: "https://api.openai.com/v1",
+            model: "o3-mini",
+            memory: 200000
+        },
+        {
+            name: "Antropic — Claude 3.7",
+            url: "https://openrouter.ai/api/v1",
+            model: "anthropic/claude-3.7-sonnet",
+            memory: 200000
+        },
+        {
+            name: "Antropic — Claude 3.5",
+            url: "https://openrouter.ai/api/v1",
+            model: "anthropic/claude-3.5-sonnet",
+            memory: 200000
+        },
+        {
+            name: "Google — Gemini 2.0 Flash",
+            url: "https://openrouter.ai/api/v1",
+            model: "google/gemini-2.0-flash-001",
+            memory: 1000000
+        },
+        {
+            name: "Google — Gemini 2.0",
+            url: "https://openrouter.ai/api/v1",
+            model: "google/gemini-2.0-pro-exp-02-05:free",
+            memory: 2000000
+        },
+        {
+            name: "Mistral — Codestral 2501",
+            url: "https://openrouter.ai/api/v1",
+            model: "mistralai/codestral-2501",
+            memory: 256000
+        },
+        {
+            name: "DeepSeek — R1",
+            url: "https://openrouter.ai/api/v1",
+            model: "deepseek/deepseek-r1",
+            memory: 128000
+        }
+    ];
+
+    const selectElement = document.getElementById('llmConfig');
+
+    // 动态填充select的options
+    modelData.forEach((model, index) => {
+        if(index === 0) {
+            document.getElementById('llmEndpoint').value = model.url;
+            document.getElementById('llmModelName').value = model.model;
+            document.getElementById('llmCtxSize').value = model.memory;
+        }
+        const option = document.createElement('option');
+        option.value = model.url;
+        option.dataset.model = model.model;
+        option.dataset.memory = model.memory;
+        option.textContent = model.name;
+        selectElement.appendChild(option);
+    });
+
+    const option = document.createElement('option');
+    option.value = "Custom";
+    option.textContent = "Custom";
+    selectElement.appendChild(option);
+
+    selectElement.addEventListener('change', function() {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+        if(selectedOption.value === "Custom") {
+            document.getElementById('customConfig').style.display = "block";
+        }else {
+            const modelUrl = selectedOption.value;
+            const modelName = selectedOption.dataset.model;
+            const modelMemory = selectedOption.dataset.memory;
+
+            document.getElementById('llmEndpoint').value = modelUrl;
+            document.getElementById('llmModelName').value = modelName;
+            document.getElementById('llmCtxSize').value = modelMemory;
+
+            document.getElementById('customConfig').style.display = "none";
+        }
+    });
+
+    async function copyContent(event) {
+        const clickedElement = event.currentTarget;
+        try {
+            const content = document.getElementById("response").innerText;
+            await navigator.clipboard.writeText(content);
+            clickedElement.innerText = "Copied!";
+            setTimeout(() => {
+                clickedElement.innerText = "Copy";
+            }, 2000);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    document.getElementById("copyCode").addEventListener('click', copyContent);
+
     function updateBHeight() {
         const sections = document.querySelectorAll('.section');
         let totalHeight = 0;
