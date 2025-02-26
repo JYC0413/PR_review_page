@@ -220,12 +220,20 @@
 </div>
 
 <script>
-    window.onload = function() {
-        const left = document.getElementById('prForm');
-        const right = document.getElementById('response-part');
-        console.log(left.offsetHeight);
-        // right.style.height = left.offsetHeight + 'px';
-    };
+    function updateBHeight() {
+        const sections = document.querySelectorAll('.section');
+        let totalHeight = 0;
+
+        sections.forEach(section => {
+            totalHeight += section.offsetHeight;
+        });
+
+        const b = document.getElementById('response-part');
+        b.style.height = "calc(" + totalHeight + "px - 1.25vw)";
+    }
+
+    window.onload = updateBHeight;
+    window.onresize = updateBHeight;
     document.getElementById('prForm').addEventListener('submit', async function (event) {
         event.preventDefault();
 
@@ -245,6 +253,7 @@
 
         document.getElementById('response-part').style.display = "block";
         document.getElementById('response').innerText = 'Please wait … It could be a few minutes';
+        updateBHeight();
 
         const githubOwner = match[1];
         const githubRepo = match[2];
@@ -290,6 +299,7 @@
                 console.log('Webhook called successfully');
                 document.getElementById('response').innerHTML = marked.parse(await webhookResponse.text());
             }
+            updateBHeight();
 
         } catch (error) {
             document.getElementById('response').innerText = `Error: ${error.message}`;
