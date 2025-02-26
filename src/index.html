@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub PR Parser</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -120,7 +121,7 @@
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
             padding: 1.25vw;
-            height: 27.75vw;
+            height: 35.75vw;
         }
 
         @media (max-width: 760px) {
@@ -191,16 +192,21 @@
             <h2 class="section-title">Gaia Config</h2>
             <div class="line">
                 <label for="llmEndpoint">LLM API Endpoint:</label>
-                <input type="text" id="llmEndpoint" name="llmEndpoint" required>
+                <input value="https://coder.gaia.domains/v1" type="text" id="llmEndpoint" name="llmEndpoint" required>
+            </div>
+            <div class="line">
+                <label for="llmEndpoint">LLM API Endpoint:</label>
+                <input value="Qwen2.5-Coder-32B-Instruct-Q5_K_M" type="text" id="llmModelName" name="llmModelName" required>
             </div>
             <div class="line">
                 <label for="llmCtxSize">LLM Context Size:</label>
-                <input type="number" id="llmCtxSize" name="llmCtxSize" required>
+                <input value="16384" type="number" id="llmCtxSize" name="llmCtxSize" required>
             </div>
             <div class="line">
                 <label for="llmApiKey">LLM API Key:</label>
                 <input type="text" id="llmApiKey" name="llmApiKey" required>
             </div>
+            <span style="color: #b2b2b2;">* You can get our API key through <a href="https://docs.gaianet.ai/getting-started/authentication" style="color: #626262;" target="_blank">this documentation</a>.</span>
         </div>
 
         <div class="section">
@@ -231,6 +237,9 @@
             alert('Invalid PR URL');
             return;
         }
+
+        document.getElementById('response-part').style.display = "block";
+        document.getElementById('response').innerText = 'Please wait … It could be a few minutes';
 
         const githubOwner = match[1];
         const githubRepo = match[2];
@@ -273,13 +282,11 @@
                 document.getElementById('response').innerText = 'Error ' + webhookResponse.statusText + ': ' + await webhookResponse.text();
             } else {
                 console.log('Webhook called successfully');
-                document.getElementById('response').innerText = await webhookResponse.text();
+                document.getElementById('response').innerText = marked.parse(await webhookResponse.text());
             }
 
-            document.getElementById('response-part').style.display = "block";
         } catch (error) {
             document.getElementById('response').innerText = `Error: ${error.message}`;
-            document.getElementById('response-part').style.display = "block";
         }
     });
 </script>
