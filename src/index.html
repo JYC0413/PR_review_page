@@ -187,7 +187,7 @@
             <h2 class="section-title">Gaia Config</h2>
             <div class="line">
                 <label for="llmConfig">LLM Configuration:</label>
-                <select id="llmConfig" name="llmConfig" required>
+                <select style="width:100%;" id="llmConfig" name="llmConfig" required>
                 </select>
             </div>
             <div id="customConfig" style="display: none;">
@@ -223,7 +223,10 @@
     </form>
     <div style="position: relative;" id="response-part">
         <h2>Response</h2>
-        <div id="copyCode" style="display: none;position: absolute; margin-top:0.5vw;right: 2vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">Copy</div>
+        <div id="copyCode"
+             style="display: none;position: absolute; margin-top:0.5vw;right: 3vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">
+            Copy
+        </div>
         <div id="response"></div>
     </div>
 </div>
@@ -314,7 +317,7 @@
 
     // 动态填充select的options
     modelData.forEach((model, index) => {
-        if(index === 0) {
+        if (index === 0) {
             document.getElementById('llmEndpoint').value = model.url;
             document.getElementById('llmModelName').value = model.model;
             document.getElementById('llmCtxSize').value = model.memory;
@@ -332,12 +335,12 @@
     option.textContent = "Custom";
     selectElement.appendChild(option);
 
-    selectElement.addEventListener('change', function() {
+    selectElement.addEventListener('change', function () {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
 
-        if(selectedOption.value === "Custom") {
+        if (selectedOption.value === "Custom") {
             document.getElementById('customConfig').style.display = "block";
-        }else {
+        } else {
             const modelUrl = selectedOption.value;
             const modelName = selectedOption.dataset.model;
             const modelMemory = selectedOption.dataset.memory;
