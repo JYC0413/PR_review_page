@@ -195,7 +195,7 @@
                 <input value="https://coder.gaia.domains/v1" type="text" id="llmEndpoint" name="llmEndpoint" required>
             </div>
             <div class="line">
-                <label for="llmEndpoint">LLM API Endpoint:</label>
+                <label for="llmModelName">LLM Model Name:</label>
                 <input value="Qwen2.5-Coder-32B-Instruct-Q5_K_M" type="text" id="llmModelName" name="llmModelName" required>
             </div>
             <div class="line">
@@ -227,6 +227,7 @@
 
         const prUrl = document.getElementById('prUrl').value;
         const llmEndpoint = document.getElementById('llmEndpoint').value;
+        const llmModelName = document.getElementById('llmModelName').value;
         const llmCtxSize = document.getElementById('llmCtxSize').value;
         const llmApiKey = document.getElementById('llmApiKey').value;
 
@@ -264,6 +265,7 @@
                 github_pr_number: parseInt(githubPrNumber, 0),
                 llm_api_endpoint: llmEndpoint,
                 llm_ctx_size: parseInt(llmCtxSize, 0),
+                llm_model_name: llmModelName,
                 llm_api_key: llmApiKey,
                 system_prompt: systemPrompt
             };
