@@ -113,7 +113,7 @@
 
         #response-part {
             flex: 1;
-            /*display: none;*/
+            display: none;
             border-radius: 0.5vw;
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
@@ -223,7 +223,7 @@
     </form>
     <div style="position: relative;" id="response-part">
         <h2>Response</h2>
-        <div id="copyCode" style="position: absolute; margin-top:0.5vw;right: 2vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">Copy</div>
+        <div id="copyCode" style="display: none;position: absolute; margin-top:0.5vw;right: 2vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">Copy</div>
         <div id="response"></div>
     </div>
 </div>
@@ -444,6 +444,7 @@
             } else {
                 console.log('Webhook called successfully');
                 document.getElementById('response').innerHTML = marked.parse(await webhookResponse.text());
+                document.getElementById('copyCode').style.display = "block";
             }
             updateBHeight();
 
