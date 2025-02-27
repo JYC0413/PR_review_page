@@ -17,7 +17,7 @@ async fn handler(
     body: Vec<u8>,
 ) {
     logger::init();
-    let html = match _subpath.as_str() {
+    et (content_type, html) = match _subpath.as_str() {
         "/index.html" | "/index" => ("text/html", include_str!("index.html").as_bytes().to_vec()),
         "/favicon.ico" => ("image/x-icon", include_bytes!("favicon.ico").to_vec()),
         _ => include_str!("index.html")
