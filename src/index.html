@@ -121,6 +121,18 @@
             padding: 1.25vw;
         }
 
+        #copyCode {
+            display: none;
+            position: absolute;
+            margin-top: 0.5vw;
+            right: 3vw;
+            padding: 0.15vw 0.4vw;
+            font-size: 0.7vw;
+            background-color: #c7c7c7;
+            border-radius: 0.2vw;
+            cursor: pointer;
+        }
+
         @media (max-width: 760px) {
             body {
                 font-size: 4vw;
@@ -144,7 +156,7 @@
             }
 
             select {
-                width: calc(100% - 14vw)!important;
+                width: calc(100% - 14vw) !important;
             }
 
             .line {
@@ -180,6 +192,14 @@
             #response-part {
                 width: calc(100% - 2.5vw);
                 border-radius: 2.5vw;
+            }
+
+            #copyCode {
+                margin-top: 1.5vw;
+                right: 2.5vw;
+                padding: 0.55vw 1.9vw;
+                font-size: 2.7vw;
+                border-radius: 1.2vw;
             }
         }
     </style>
