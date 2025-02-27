@@ -86,14 +86,17 @@
             background-color: #0056b3;
         }
 
-        #response {
+        #response, textarea {
             margin-top: 1.25vw;
             padding: 0.625vw;
             background: #e9ecef;
             border-radius: 0.25vw;
             max-height: calc(100% - 4.75vw);
-            min-height: calc(100% - 4.75vw);
             overflow-y: auto;
+        }
+
+        textarea {
+            width: calc(100% - 1.25vw);
         }
 
         .centered {
@@ -114,6 +117,7 @@
 
         #response-part {
             flex: 1;
+            /*display: block;*/
             display: none;
             border-radius: 0.5vw;
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
@@ -122,6 +126,23 @@
         }
 
         #copyCode {
+            margin-right: 10.5vw;
+        }
+
+        #saveEdit {
+            margin-right: 13.5vw;
+        }
+
+        #editCode, #cancelEdit {
+            margin-right: 0.5vw;
+        }
+
+        #saveEdit, #cancelEdit {
+            margin-top: 2.5vw;
+        }
+
+        .response-button {
+            /*display: block;*/
             display: none;
             position: absolute;
             margin-top: 0.5vw;
@@ -194,9 +215,8 @@
                 border-radius: 2.5vw;
             }
 
-            #copyCode {
+            .response-button {
                 margin-top: 1.5vw;
-                right: 2.5vw;
                 padding: 0.55vw 1.9vw;
                 font-size: 2.7vw;
                 border-radius: 1.2vw;
@@ -247,15 +267,17 @@
     </form>
     <div style="position: relative;" id="response-part">
         <h2>Response</h2>
-        <div id="copyCode"
-             style="display: none;position: absolute; margin-top:0.5vw;right: 3vw;padding: 0.15vw 0.4vw;font-size: 0.7vw;background-color: #c7c7c7;border-radius: 0.2vw;cursor: pointer;">
-            Copy
-        </div>
+        <div id="copyCode" class="response-button">Copy</div>
+        <div id="editCode" class="response-button">Edit</div>
+        <div id="saveEdit" class="response-button">Save</div>
+        <div id="cancelEdit" class="response-button">Cancel</div>
         <div id="response"></div>
+        <textarea id="editArea"></textarea>
     </div>
 </div>
 
 <script>
+    let mdData = '';
     const modelData = [
         {
             name: "Gaia — Qwen Coder 32b",
@@ -380,8 +402,7 @@
     async function copyContent(event) {
         const clickedElement = event.currentTarget;
         try {
-            const content = document.getElementById("response").innerText;
-            await navigator.clipboard.writeText(content);
+            await navigator.clipboard.writeText(mdData);
             clickedElement.innerText = "Copied!";
             setTimeout(() => {
                 clickedElement.innerText = "Copy";
@@ -391,7 +412,40 @@
         }
     }
 
+    function editContent() {
+        document.getElementById('response').style.display = 'none';
+        document.getElementById('editArea').style.display = 'block';
+        document.getElementById('editArea').value = mdData;
+        document.getElementById('copyCode').style.display = 'none';
+        document.getElementById('editCode').style.display = 'none';
+        document.getElementById('saveEdit').style.display = 'block';
+        document.getElementById('cancelEdit').style.display = 'block';
+    }
+
+    function saveContent() {
+        mdData = document.getElementById('editArea').value;
+        document.getElementById('response').innerHTML = marked.parse(mdData);
+        document.getElementById('response').style.display = 'block';
+        document.getElementById('editArea').style.display = 'none';
+        document.getElementById('copyCode').style.display = 'block';
+        document.getElementById('editCode').style.display = 'block';
+        document.getElementById('saveEdit').style.display = 'none';
+        document.getElementById('cancelEdit').style.display = 'none';
+    }
+
+    function cancelEdit() {
+        document.getElementById('response').style.display = 'block';
+        document.getElementById('editArea').style.display = 'none';
+        document.getElementById('copyCode').style.display = 'block';
+        document.getElementById('editCode').style.display = 'block';
+        document.getElementById('saveEdit').style.display = 'none';
+        document.getElementById('cancelEdit').style.display = 'none';
+    }
+
     document.getElementById("copyCode").addEventListener('click', copyContent);
+    document.getElementById("editCode").addEventListener('click', editContent);
+    document.getElementById("saveEdit").addEventListener('click', saveContent);
+    document.getElementById("cancelEdit").addEventListener('click', cancelEdit);
 
     function updateBHeight() {
         const sections = document.querySelectorAll('.section');
@@ -470,7 +524,8 @@
                 document.getElementById('response').innerText = 'Error ' + webhookResponse.statusText + ': ' + await webhookResponse.text();
             } else {
                 console.log('Webhook called successfully');
-                document.getElementById('response').innerHTML = marked.parse(await webhookResponse.text());
+                mdData = await webhookResponse.text()
+                document.getElementById('response').innerHTML = marked.parse(mdData);
                 document.getElementById('copyCode').style.display = "block";
             }
             updateBHeight();
