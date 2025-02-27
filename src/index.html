@@ -96,6 +96,9 @@
         }
 
         textarea {
+            display: none;
+            height: 100%;
+            font-size: 1vw;
             width: calc(100% - 1.25vw);
         }
 
@@ -126,19 +129,19 @@
         }
 
         #copyCode {
-            margin-right: 10.5vw;
+            margin-right: 2.5vw;
         }
 
         #saveEdit {
-            margin-right: 13.5vw;
+            margin-right: 3.5vw;
         }
 
         #editCode, #cancelEdit {
-            margin-right: 0.5vw;
+            margin-right: 0;
         }
 
         #saveEdit, #cancelEdit {
-            margin-top: 2.5vw;
+            margin-top: 0;
         }
 
         .response-button {
@@ -220,6 +223,27 @@
                 padding: 0.55vw 1.9vw;
                 font-size: 2.7vw;
                 border-radius: 1.2vw;
+            }
+
+            textarea {
+                height: 100vw;
+                font-size: 4vw;
+            }
+
+            #copyCode {
+                margin-right: 10.5vw;
+            }
+
+            #saveEdit {
+                margin-right: 13.5vw;
+            }
+
+            #editCode, #cancelEdit {
+                margin-right: 0.5vw;
+            }
+
+            #saveEdit, #cancelEdit {
+                margin-top: 1.5vw;
             }
         }
     </style>
@@ -527,6 +551,7 @@
                 mdData = await webhookResponse.text()
                 document.getElementById('response').innerHTML = marked.parse(mdData);
                 document.getElementById('copyCode').style.display = "block";
+                document.getElementById('editCode').style.display = "block";
             }
             updateBHeight();
 
