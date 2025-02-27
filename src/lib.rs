@@ -25,6 +25,6 @@ async fn handler(
     send_response(
         200,
         vec![(String::from("content-type"), String::from(content_type))],
-        html.as_bytes().to_vec(),
+        html,
     );
 }
