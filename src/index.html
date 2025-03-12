@@ -62,7 +62,7 @@
             padding-right: 0.3125vw;
         }
 
-        input[type="text"], input[type="number"], select {
+        input[type="text"], input[type="number"], select, .prompt-textarea {
             flex: 1;
             line-height: 1.5vw;
             font-size: 1.3vw;
@@ -86,7 +86,7 @@
             background-color: #0056b3;
         }
 
-        #response, textarea {
+        #response, #editArea {
             margin-top: 1.25vw;
             padding: 0.625vw;
             background: #e9ecef;
@@ -95,11 +95,12 @@
             overflow-y: auto;
         }
 
-        textarea {
+        #editArea {
             display: none;
             height: 100%;
             font-size: 1vw;
             width: calc(100% - 1.25vw);
+            padding-top: 2vw;
         }
 
         .centered {
@@ -113,9 +114,9 @@
             margin-top: 0;
         }
 
-        .input-full-width {
+        .input-full-width, .prompt-textarea {
             width: calc(100% - 1.25vw);
-            margin-bottom: 1.25vw;
+            margin-bottom: 0.5vw;
         }
 
         #response-part {
@@ -187,7 +188,7 @@
                 flex-direction: column;
             }
 
-            .input-full-width {
+            .input-full-width, .prompt-textarea {
                 margin: 2vw 7vw !important;
             }
 
@@ -225,9 +226,10 @@
                 border-radius: 1.2vw;
             }
 
-            textarea {
+            #editArea {
                 height: 100vw;
                 font-size: 4vw;
+                padding-top: 5vw;
             }
 
             #copyCode {
@@ -276,7 +278,7 @@
             </div>
             <div class="line">
                 <label for="llmApiKey">LLM API Key:</label>
-                <input type="text" id="llmApiKey" name="llmApiKey" required>
+                <input type="text" id="llmApiKey" name="llmApiKey">
             </div>
             <span style="color: #b2b2b2;">* You can get our API key through <a
                     href="https://docs.gaianet.ai/getting-started/authentication" style="color: #626262;"
@@ -286,6 +288,11 @@
         <div class="section">
             <h2 class="section-title"><label for="prUrl">GITHUB PR URL</label></h2>
             <input class="input-full-width" type="text" id="prUrl" name="prUrl" required>
+            <textarea class="prompt-textarea" rows="3" placeholder="Instructions on what and how to conduct the review" id="reviewPrompt" name="reviewPrompt"></textarea>
+            <textarea class="prompt-textarea" style="display: none;" rows="3" placeholder="Description of the repo" id="description" name="description"></textarea>
+            <div style="display: flex;align-items: center;margin-bottom: 0.75vw;">
+                <input type="checkbox" id="useLlm" name="useLlm" checked><label for="useLlm">Use llms.txt in the repo</label>
+            </div>
             <button class="button-large" type="submit">Submit</button>
         </div>
     </form>
@@ -302,6 +309,18 @@
 
 <script>
     let mdData = '';
+    const path = window.location.pathname;
+
+    const segments = path.split('/').filter(segment => segment);
+    if (segments[0]) {
+        prUrl = `https://github.com/${segments[0]}`
+        if (segments[1]) {
+            prUrl += `/${segments[1]}`
+            if (segments[2]) {
+                prUrl += `/pull/${segments[2]}`
+            }
+        }
+    }
     const modelData = [
         {
             name: "Gaia — Qwen Coder 32b",
@@ -414,6 +433,7 @@
             const modelUrl = selectedOption.value;
             const modelName = selectedOption.dataset.model;
             const modelMemory = selectedOption.dataset.memory;
+            document.getElementById('llmApiKey').required = !modelUrl.includes("gaia");
 
             document.getElementById('llmEndpoint').value = modelUrl;
             document.getElementById('llmModelName').value = modelName;
@@ -483,6 +503,11 @@
         b.style.height = "calc(" + totalHeight + "px - 1.25vw)";
     }
 
+    document.getElementById('useLlm').addEventListener('change', function () {
+        const checked = document.getElementById('useLlm').checked;
+        document.getElementById('description').style.display = checked ? "none" : "block";
+    });
+
     window.onload = updateBHeight;
     window.onresize = updateBHeight;
     document.getElementById('prForm').addEventListener('submit', async function (event) {
@@ -512,16 +537,24 @@
 
         let fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/llms.txt`;
 
+        let systemPrompt
+
         try {
-            let response = await fetch(fileUrl);
-            if (!response.ok) {
-                fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/README.md`;
-                response = await fetch(fileUrl);
+            if (!document.getElementById('useLlm').checked) {
+                let response = await fetch(fileUrl);
+                if (!response.ok) {
+                    fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/README.md`;
+                    response = await fetch(fileUrl);
+                    systemPrompt = await response.text();
+                }
+                if (!response.ok) {
+                    console.log('Failed to fetch file from GitHub');
+                }
+            }else {
+                systemPrompt = document.getElementById('description').value;
             }
-            if (!response.ok) {
-                console.log('Failed to fetch file from GitHub');
-            }
-            const systemPrompt = await response.text();
+
+            const reviewPrompt = document.getElementById('reviewPrompt').value;
 
             const requestData = {
                 github_owner: githubOwner,
@@ -531,7 +564,8 @@
                 llm_ctx_size: parseInt(llmCtxSize, 0),
                 llm_model_name: llmModelName,
                 llm_api_key: llmApiKey,
-                system_prompt: systemPrompt
+                system_prompt: systemPrompt,
+                review_prompt: reviewPrompt
             };
 
             const webhookUrl = 'https://code.flows.network/webhook/o9689KdmSIcgOIAOFUs9/review';
