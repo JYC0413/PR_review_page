@@ -3,8 +3,6 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use webhook_flows::{create_endpoint, request_handler, send_response};
 use reqwest::Client;
-use std::sync::Arc;
-use tokio::sync::Mutex;
 use uuid::Uuid;
 use store::*;
 use store_flows as store;

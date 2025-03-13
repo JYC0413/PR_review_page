@@ -9,7 +9,7 @@ path = "./src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-tokio_wasi = { version = "1.25.0", features = ["macros", "rt"] }
+tokio_wasi = { version = "1.25.1", features = ["macros", "rt"] }
 log = "0.4.19"
 uuid = { version = "1.5", features = ["v4"] }
 flowsnet-platform-sdk = "0.1.5"
