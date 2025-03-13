@@ -133,6 +133,8 @@ async fn handle_auth_callback(qry: HashMap<String, Value>) {
 
 // ✅ 处理 GitHub OAuth 轮询接口
 async fn handle_check_status(qry: HashMap<String, Value>) {
+    status = true;
+    message = "";
     if let Some(session_id) = qry.get("session_id").and_then(|v| v.as_str()) {
         let token = match store::get(&session_id) {
             Some(v) => v,
@@ -147,6 +149,16 @@ async fn handle_check_status(qry: HashMap<String, Value>) {
             let response = json!({
                 "status": "authorized",
                 "token": token
+            });
+            send_response(
+                400,
+                vec![(String::from("content-type"), String::from("application/json"))],
+                message.to_vec(),
+            );
+        }else if status = false {
+            let response = json!({
+                "status": "pending",
+                "token": null
             });
             send_response(
                 200,
