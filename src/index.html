@@ -434,6 +434,7 @@
             const modelName = selectedOption.dataset.model;
             const modelMemory = selectedOption.dataset.memory;
             document.getElementById('llmApiKey').required = !modelUrl.includes("gaia");
+            document.getElementById('llmApiKey').placeholder = modelUrl.includes("gaia") ? "Optional" : "";
 
             document.getElementById('llmEndpoint').value = modelUrl;
             document.getElementById('llmModelName').value = modelName;
