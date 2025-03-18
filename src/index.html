@@ -158,6 +158,12 @@
             cursor: pointer;
         }
 
+        select {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
         @media (max-width: 760px) {
             body {
                 font-size: 4vw;
@@ -171,9 +177,14 @@
                 font-size: 6vw;
             }
 
-            input[type="text"], input[type="number"], select {
+            .prompt-textarea {
+                height: 16vw !important;
+            }
+
+            input[type="text"], input[type="number"], select, .prompt-textarea {
                 height: 4vw;
                 font-size: 4vw;
+                line-height: 4vw;
                 padding: 3vw;
                 width: calc(100% - 20vw);
                 border-radius: 2vw;
@@ -181,9 +192,6 @@
             }
 
             select {
-                -webkit-appearance: none !important;
-                -moz-appearance: none !important;
-                appearance: none !important;
                 width: calc(100% - 14vw) !important;
             }
 
@@ -551,11 +559,6 @@
         try {
             if (!document.getElementById('useLlm').checked) {
                 let response = await fetch(fileUrl);
-                if (!response.ok) {
-                    fileUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/main/README.md`;
-                    response = await fetch(fileUrl);
-                    systemPrompt = await response.text();
-                }
                 if (!response.ok) {
                     console.log('Failed to fetch file from GitHub');
                 }
