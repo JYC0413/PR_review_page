@@ -127,6 +127,7 @@
             box-shadow: 0 0 0.625vw rgba(0, 0, 0, 0.1);
             margin: 1.25vw;
             padding: 1.25vw;
+            width: 25vw;
         }
 
         #copyCode {
@@ -529,6 +530,8 @@
     window.onresize = updateBHeight;
     document.getElementById('prForm').addEventListener('submit', async function (event) {
         event.preventDefault();
+        document.getElementById('copyCode').style.display = "none";
+        document.getElementById('editCode').style.display = "none";
 
         const prUrl = document.getElementById('prUrl').value;
         const llmEndpoint = document.getElementById('llmEndpoint').value;
